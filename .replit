@@ -1,2 +1,143 @@
 language = "nodejs"
 run = "npm start"
+modules = ["nodejs-20"]
+
+[agent]
+expertMode = true
+
+[[ports]]
+localPort = 3000
+externalPort = 3000
+
+[[ports]]
+localPort = 5000
+externalPort = 80
+
+[[ports]]
+localPort = 8977
+externalPort = 80
+
+[[ports]]
+localPort = 8978
+externalPort = 3000
+
+[[ports]]
+localPort = 9000
+externalPort = 9000
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "AI Agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Rem AI Agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Shary Agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Bot Start"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Rem Bot"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Shary Bot"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "KeepAlive"
+
+[[workflows.workflow]]
+name = "AI Agent"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "node agent-web/server.js"
+waitForPort = 5000
+
+[workflows.workflow.metadata]
+outputType = "webview"
+
+[[workflows.workflow]]
+name = "Rem AI Agent"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "node rem-web/server.js"
+waitForPort = 3000
+
+[workflows.workflow.metadata]
+outputType = "console"
+
+[[workflows.workflow]]
+name = "Shary Agent"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "node shary-web/server.js"
+waitForPort = 3003
+
+[workflows.workflow.metadata]
+outputType = "console"
+
+[[workflows.workflow]]
+name = "Bot Start"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "node index.js"
+
+[workflows.workflow.metadata]
+outputType = "console"
+
+[[workflows.workflow]]
+name = "Rem Bot"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "node index-rem.js"
+
+[workflows.workflow.metadata]
+outputType = "console"
+
+[[workflows.workflow]]
+name = "Shary Bot"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "node index-shary.js"
+
+[workflows.workflow.metadata]
+outputType = "console"
+
+[[workflows.workflow]]
+name = "KeepAlive"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "node keepalive.js"
+waitForPort = 9000
+
+[workflows.workflow.metadata]
+outputType = "console"

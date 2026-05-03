@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Service Agent — Chocolate</title>
+<style>
+:root{--bg:#1a0e08;--surf:#251508;--surf2:#2e1a0a;--bord:#3d2510;--acc:#d4a574;--acc2:#b8875a;--text:#e8d5c0;--muted:#7a5c42;--r:10px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.header{display:flex;align-items:center;justify-content:space-between;padding:14px 28px;border-bottom:1px solid var(--bord);background:var(--surf);position:sticky;top:0;z-index:10}
+.hlt{display:flex;align-items:center;gap:10px}
+.hlt a{color:var(--acc);font-size:0.82rem;display:flex;align-items:center;gap:5px;text-decoration:none;opacity:.8}
+.hlt a:hover{opacity:1}
+.htitle{font-weight:700;font-size:0.95rem;color:var(--acc)}
+.tabs{display:flex;gap:6px;padding:20px 28px 0}
+.tab{padding:8px 18px;border-radius:var(--r) var(--r) 0 0;font-size:0.83rem;font-weight:600;cursor:pointer;border:1px solid var(--bord);border-bottom:none;background:var(--surf);color:var(--muted);transition:.2s}
+.tab.active{background:var(--surf2);color:var(--acc);border-color:var(--acc)}
+.content{padding:0 28px 28px}
+.tab-panel{display:none;background:var(--surf2);border:1px solid var(--bord);border-radius:0 var(--r) var(--r) var(--r);padding:20px;min-height:200px}
+.tab-panel.active{display:block}
+.file-list{display:flex;flex-direction:column;gap:8px}
+.file-item{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--surf);border:1px solid var(--bord);border-radius:var(--r);cursor:pointer;transition:.2s;text-decoration:none;color:var(--text)}
+.file-item:hover{border-color:var(--acc);background:var(--surf2)}
+.file-item svg{color:var(--acc);flex-shrink:0}
+.file-name{font-size:0.85rem;font-weight:500;flex:1}
+.file-open{font-size:0.72rem;color:var(--acc);opacity:.7}
+.empty{color:var(--muted);font-size:0.85rem;text-align:center;padding:30px 0}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="hlt">
+    <a href="/"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Dashboard</a>
+    <span style="color:var(--bord)">|</span>
+    <span class="htitle">Service Agent</span>
+  </div>
+</div>
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('amagi',this)">AmagiService</div>
+  <div class="tab" onclick="switchTab('rem',this)">RemService</div>
+  <div class="tab" onclick="switchTab('shary',this)">SharyService</div>
+</div>
+<div class="content">
+  <div class="tab-panel active" id="panel-amagi"></div>
+  <div class="tab-panel" id="panel-rem"></div>
+  <div class="tab-panel" id="panel-shary"></div>
+</div>
+<script>
+async function loadFiles(key) {
+  const panel = document.getElementById('panel-' + key);
+  if (panel.dataset.loaded) return;
+  panel.dataset.loaded = '1';
+  try {
+    const r = await fetch('/api/services/' + key);
+    const d = await r.json();
+    if (!d.files || d.files.length === 0) {
+      panel.innerHTML = '<div class="empty">Belum ada file .html di folder ini.</div>';
+      return;
+    }
+    panel.innerHTML = '<div class="file-list">' + d.files.map(f =>
+      `<a class="file-item" href="/service-files/${key}/${f}" target="_blank">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        <span class="file-name">${f}</span>
+        <span class="file-open">Buka ↗</span>
+      </a>`
+    ).join('') + '</div>';
+  } catch { panel.innerHTML = '<div class="empty">Gagal memuat file.</div>'; }
+}
+function switchTab(key, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('panel-' + key).classList.add('active');
+  loadFiles(key);
+}
+loadFiles('amagi');
+</script>
+</body>
+</html>

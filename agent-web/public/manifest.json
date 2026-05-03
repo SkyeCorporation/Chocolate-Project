@@ -1,0 +1,26 @@
+{
+  "name": "Chocolate Project",
+  "short_name": "Chocolate",
+  "description": "Chocolate Project V8.1 — Monitor & AI Agent Dashboard",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1a0e08",
+  "theme_color": "#d4a574",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["utilities", "productivity"],
+  "lang": "id"
+}
