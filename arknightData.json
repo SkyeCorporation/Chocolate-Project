@@ -1,0 +1,112 @@
+[
+  {
+    "id": "1",
+    "nameItem": "Exusiai",
+    "typeItem": "arkn",
+    "stars": 6,
+    "price": 18000,
+    "rate": 0.01,
+    "img": "https://link-ke-exusiai-full-art.jpg",
+    "imgInventory": "https://link-ke-exusiai-inventory.jpg"
+  },
+  {
+    "id": "2",
+    "nameItem": "SilverAsh",
+    "typeItem": "arkn",
+    "stars": 6,
+    "price": 18000,
+    "rate": 0.01,
+    "img": "https://link-ke-silverash-full-art.jpg",
+    "imgInventory": "https://link-ke-silverash-inventory.jpg"
+  },
+  {
+    "id": "50",
+    "nameItem": "12F",
+    "typeItem": "arkn",
+    "stars": 1,
+    "price": 1000,
+    "rate": 0.5,
+    "img": "https://link-ke-12F-full.jpg",
+    "imgInventory": "https://link-ke-12F-inventory.jpg"
+  },
+  {
+    "id": "999",
+    "nameItem": "Hypergryph",
+    "typeItem": "arkn",
+    "stars": 6,
+    "price": 18000,
+    "rate": 0.01,
+    "img": "arknights-database/Hypergryph.webp",
+    "imgInventory": "arknights-database/Hypergryph.webp"
+  },
+  {
+    "id": "5",
+    "nameItem": "Logos",
+    "typeItem": "arkn",
+    "stars": 6,
+    "price": 18000,
+    "rate": 0.01,
+    "img": "arknights-database/Logos.webp",
+    "imgInventory": "arknights-database/Logos.webp"
+  },
+  {
+    "id": "4S0",
+    "nameItem": "Pozyomka-S0",
+    "typeItem": "arkn",
+    "stars": 6,
+    "price": 18000,
+    "rate": 0.01,
+    "img": "arknights-database/Pozyomka-S0.webp",
+    "imgInventory": "arknights-database/Pozyomka-S0.webp"
+  },
+  {
+    "id": "4U",
+    "nameItem": "Pozyomka-U",
+    "typeItem": "arkn",
+    "stars": 6,
+    "price": 18000,
+    "rate": 0.01,
+    "img": "arknights-database/Pozyomka-U.webp",
+    "imgInventory": "arknights-database/Pozyomka-U.webp"
+  },
+  {
+    "id": "4",
+    "nameItem": "Pozyomka",
+    "typeItem": "arkn",
+    "stars": 6,
+    "price": 18000,
+    "rate": 0.01,
+    "img": "arknights-database/Pozyomka.webp",
+    "imgInventory": "arknights-database/Pozyomka.webp"
+  },
+  {
+    "id": "3S1",
+    "nameItem": "Vigil-S1",
+    "typeItem": "arkn",
+    "stars": 6,
+    "price": 18000,
+    "rate": 0.01,
+    "img": "arknights-database/Vigil-S1.webp",
+    "imgInventory": "arknights-database/Vigil-S1.webp"
+  },
+  {
+    "id": "3U",
+    "nameItem": "Vigil-U",
+    "typeItem": "arkn",
+    "stars": 6,
+    "price": 18000,
+    "rate": 0.01,
+    "img": "arknights-database/Vigil-U.webp",
+    "imgInventory": "arknights-database/Vigil-U.webp"
+  },
+  {
+    "id": "3",
+    "nameItem": "Vigil",
+    "typeItem": "arkn",
+    "stars": 6,
+    "price": 18000,
+    "rate": 0.01,
+    "img": "arknights-database/Vigil.webp",
+    "imgInventory": "arknights-database/Vigil.webp"
+  }
+]

@@ -1,0 +1,103 @@
+entrypoint = "main.sh"
+modules = ["bash", "nodejs-20"]
+
+[nix]
+channel = "stable-24_05"
+packages = ["libuuid", "pkg-config", "cairo", "pango", "libpng", "libjpeg", "giflib", "librsvg", "pixman"]
+
+[deployment]
+run = ["bash", "main.sh"]
+deploymentTarget = "cloudrun"
+
+[agent]
+expertMode = true
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Bot Start"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "AI Agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Rem AI Agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Rem Bot"
+
+[[workflows.workflow]]
+name = "Bot Start"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "node index.js"
+
+[workflows.workflow.metadata]
+outputType = "console"
+
+[[workflows.workflow]]
+name = "AI Agent"
+author = "agent"
+
+[workflows.workflow.metadata]
+outputType = "webview"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "node agent-web/server.js"
+waitForPort = 5000
+
+[[workflows.workflow]]
+name = "Rem AI Agent"
+author = "agent"
+
+[workflows.workflow.metadata]
+outputType = "console"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "node rem-web/server.js"
+waitForPort = 3000
+
+[[workflows.workflow]]
+name = "Rem Bot"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "node index-rem.js"
+
+[workflows.workflow.metadata]
+outputType = "console"
+
+[[ports]]
+localPort = 3000
+externalPort = 3000
+
+[[ports]]
+localPort = 5000
+externalPort = 80
+
+[[ports]]
+localPort = 5001
+externalPort = 3002
+
+[[ports]]
+localPort = 8976
+externalPort = 80
+
+[[ports]]
+localPort = 8977
+externalPort = 3001

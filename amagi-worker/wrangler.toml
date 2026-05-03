@@ -1,0 +1,7 @@
+name = "amagi-worker"
+main = "src/index.js"
+compatibility_date = "2024-01-01"
+account_id = "c853877bc37a27917a601e3afffdbd57"
+
+[ai]
+binding = "AI"

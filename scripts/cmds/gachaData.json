@@ -1,0 +1,17 @@
+{
+  "users": {
+    "61584630807921": {
+      "pulls": 1,
+      "inventory": [
+        "Common"
+      ]
+    },
+    "61581709108554": {
+      "pulls": 2,
+      "inventory": [
+        "Common",
+        "Common"
+      ]
+    }
+  }
+}

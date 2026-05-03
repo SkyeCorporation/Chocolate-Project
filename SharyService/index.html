@@ -1,7 +1,21 @@
 <!DOCTYPE html>
-<html lang="id">
-<head><meta charset="UTF-8"/><title>SharyService</title>
-<style>body{font-family:sans-serif;background:#0a0606;color:#e8c0c0;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;text-align:center}h1{color:#ef2b2b}p{color:#7a4242;margin-top:8px;font-size:.9rem}</style>
-</head>
-<body><div><h1>SharyService</h1><p>Folder ini untuk menyimpan file HTML yang dibuat oleh Shary (Hacker).</p></div></body>
+<html>
+<body>
+    <h1>Shary Account Factory</h1>
+    <input type="number" id="count" placeholder="Total Akun">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="start()">Mulai Buat Akun</button>
+    <script>
+        async function start() {
+            const count = document.getElementById('count').value;
+            const password = document.getElementById('password').value;
+            await fetch('/api/create', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({count, password})
+            });
+            alert('Proses berjalan, cek log terminal Tuan!');
+        }
+    </script>
+</body>
 </html>

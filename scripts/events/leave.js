@@ -1,4 +1,4 @@
-const { getTime, drive } = global.utils;
+const { getTime } = global.utils;
 
 module.exports = {
 	config: {
@@ -82,16 +82,6 @@ module.exports = {
 					}];
 				}
 
-				if (threadData.data.leaveAttachment) {
-					const files = threadData.data.leaveAttachment;
-					const attachments = files.reduce((acc, file) => {
-						acc.push(drive.getFile(file, "stream"));
-						return acc;
-					}, []);
-					form.attachment = (await Promise.allSettled(attachments))
-						.filter(({ status }) => status == "fulfilled")
-						.map(({ value }) => value);
-				}
 				message.send(form);
 			};
 	}

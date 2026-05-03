@@ -1,231 +1,134 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<meta name="theme-color" content="#d4a574"/>
-<meta name="description" content="Chocolate Project V8.1 Dashboard"/>
-<title>Chocolate Project V8.1</title>
-<link rel="stylesheet" href="/dashboard.css"/>
-<link rel="manifest" href="/manifest.json"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Chocolate Project V8.1</title>
+  <link rel="stylesheet" href="dashboard.css">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 </head>
 <body>
-<header class="header">
-  <div class="header-left">
-    <div class="logo">
-      <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect width="28" height="28" rx="6" fill="#d4a574"/><rect x="5" y="5" width="7" height="7" rx="1.5" fill="#1a0e08"/><rect x="16" y="5" width="7" height="7" rx="1.5" fill="#1a0e08"/><rect x="5" y="16" width="7" height="7" rx="1.5" fill="#1a0e08"/><rect x="16" y="16" width="7" height="7" rx="1.5" fill="#1a0e08"/></svg>
-    </div>
-    <div class="header-title">
-      <span class="title-main">Chocolate Project</span>
-      <span class="title-sub">V8.1</span>
-    </div>
-  </div>
-  <div class="header-right">
-    <div class="system-online"><span class="dot"></span><span>System Online</span></div>
-  </div>
-</header>
+  <div class="bg-grain"></div>
 
-<main class="main">
-  <div class="welcome">
-    <h1>Selamat datang, Tuan Lyethilf Luxion.</h1>
-    <p>Pilih layanan yang ingin diakses. Setiap pintu mengarah ke modul berbeda dari arsitektur Chocolate.</p>
-  </div>
-
-  <div class="cards">
-    <a class="card" href="/agent">
-      <div class="card-header">
-        <div class="card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
-        <span class="card-badge">MODULE · LIVE</span>
+  <header class="top-bar">
+    <div class="brand">
+      <div class="brand-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="3"/>
+          <path d="M3 9h18M3 15h18M9 3v18M15 3v18"/>
+        </svg>
       </div>
-      <div class="card-body">
-        <h2>AI Agent</h2>
-        <p>Masuk ke antarmuka chat AI penuh: Amagi (Gemini), Rem (OpenAI), atau Shary (Hacker). Sama seperti tampilan AI sekarang.</p>
+      <div class="brand-text">
+        <span class="brand-name">Chocolate Project</span>
+        <span class="brand-version">V8.1</span>
       </div>
-      <div class="card-footer"><span>Buka AI Agent</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
-    </a>
-    <a class="card" href="/service-agent">
-      <div class="card-header">
-        <div class="card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div>
-        <span class="card-badge">MODULE · FILES</span>
-      </div>
-      <div class="card-body">
-        <h2>Service Agent</h2>
-        <p>Browse semua HTML / Web yang dibuat oleh tiap agent. Akses folder AmagiService, RemService, dan SharyService — buka file langsung.</p>
-      </div>
-      <div class="card-footer"><span>Buka Service Agent</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
-    </a>
-  </div>
-
-  <div class="status-row">
-    <div class="status-card" id="sc-amagi">
-      <div class="sc-info">
-        <span class="sc-name">Amagi · Gemini</span>
-        <span class="sc-badge offline" id="badge-amagi">...</span>
-      </div>
-      <div class="sc-meta">port 8976 · /agent</div>
-      <div class="sc-uptime" id="up-amagi">Runtime: —</div>
     </div>
-    <div class="status-card" id="sc-rem">
-      <div class="sc-info">
-        <span class="sc-name">Rem · OpenAI</span>
-        <span class="sc-badge offline" id="badge-rem">...</span>
-      </div>
-      <div class="sc-meta">port 8977 · :3000</div>
-      <div class="sc-uptime" id="up-rem">Runtime: —</div>
+    <div class="top-meta">
+      <span class="dot pulse"></span>
+      <span>System Online</span>
     </div>
-    <div class="status-card" id="sc-shary">
-      <div class="sc-info">
-        <span class="sc-name">Shary · Hacker</span>
-        <span class="sc-badge offline" id="badge-shary">...</span>
-      </div>
-      <div class="sc-meta">port 8978 · :3003</div>
-      <div class="sc-uptime" id="up-shary">Runtime: —</div>
-    </div>
-  </div>
+  </header>
 
-  <div class="sysmon">
-    <div class="sysmon-title">System Monitor</div>
-    <div class="sysmon-grid">
-      <div class="sysmon-item">
-        <div class="sysmon-label">
-          <span>RAM Usage</span>
-          <span id="ram-text">— / —</span>
+  <main class="main">
+    <section class="hero">
+      <h1>Selamat datang, Tuan Lyethilf Luxion.</h1>
+      <p>Pilih layanan yang ingin diakses. Setiap pintu mengarah ke modul berbeda dari arsitektur Chocolate.</p>
+    </section>
+
+    <section class="card-grid">
+      <a class="card card-ai" href="/agent">
+        <div class="card-glow"></div>
+        <div class="card-head">
+          <div class="card-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+            </svg>
+          </div>
+          <div class="card-tag">Module · Live</div>
         </div>
-        <div class="progress-bar"><div class="progress-fill" id="ram-bar" style="width:0%"></div></div>
-      </div>
-      <div class="sysmon-item">
-        <div class="sysmon-label">
-          <span>Disk (ROM)</span>
-          <span id="disk-text">— / —</span>
+        <div class="card-body">
+          <h2>AI Agent</h2>
+          <p>Masuk ke antarmuka chat AI penuh: Amagi (Gemini), Rem (OpenAI), atau Shary (Hacker). Sama seperti tampilan AI sekarang.</p>
         </div>
-        <div class="progress-bar"><div class="progress-fill disk" id="disk-bar" style="width:0%"></div></div>
-      </div>
-      <div class="sysmon-item uptime-row">
-        <div class="uptime-box">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          <span>Server Uptime</span>
-          <span id="uptime-val" class="uptime-val">—</span>
+        <div class="card-foot">
+          <span>Buka AI Agent</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"/>
+            <polyline points="12 5 19 12 12 19"/>
+          </svg>
         </div>
-        <div class="uptime-box">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
-          <span>OS Uptime</span>
-          <span id="os-uptime-val" class="uptime-val">—</span>
+      </a>
+
+      <a class="card card-service" href="/service-agent">
+        <div class="card-glow"></div>
+        <div class="card-head">
+          <div class="card-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+            </svg>
+          </div>
+          <div class="card-tag">Module · Files</div>
         </div>
+        <div class="card-body">
+          <h2>Service Agent</h2>
+          <p>Browse semua HTML / Web yang dibuat oleh tiap agent. Akses folder AmagiService, RemService, dan SharyService — buka file langsung.</p>
+        </div>
+        <div class="card-foot">
+          <span>Buka Service Agent</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"/>
+            <polyline points="12 5 19 12 12 19"/>
+          </svg>
+        </div>
+      </a>
+    </section>
+
+    <section class="status-grid" id="status-grid">
+      <div class="status-card" data-name="Amagi">
+        <div class="status-row">
+          <span class="status-name">Amagi · Gemini</span>
+          <span class="status-pill" data-key="amagi">checking…</span>
+        </div>
+        <div class="status-meta">port 8976 · /agent</div>
       </div>
-    </div>
-  </div>
-</main>
+      <div class="status-card" data-name="Rem">
+        <div class="status-row">
+          <span class="status-name">Rem · OpenAI</span>
+          <span class="status-pill" data-key="rem">checking…</span>
+        </div>
+        <div class="status-meta">port 8977 · :3000</div>
+      </div>
+      <div class="status-card" data-name="Shary">
+        <div class="status-row">
+          <span class="status-name">Shary · Hacker</span>
+          <span class="status-pill" data-key="shary">checking…</span>
+        </div>
+        <div class="status-meta">port 8978 · :3003</div>
+      </div>
+    </section>
+  </main>
 
-<footer class="footer">
-  <span>Chocolate Project V8.1 · Built for Tuan Lyethilf Luxion</span>
-  <span>© Lyethilf 2026</span>
-</footer>
+  <footer class="bottom-bar">
+    <span>Chocolate Project V8.1 · Built for Tuan Lyethilf Luxion</span>
+    <span class="muted">© Lyethilf 2026</span>
+  </footer>
 
-<div class="install-bar" id="install-bar" style="display:none">
-  <div class="install-bar-inner">
-    <div class="install-bar-text">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-      <span>Install Chocolate Project sebagai aplikasi di perangkat kamu</span>
-    </div>
-    <div class="install-bar-actions">
-      <button class="btn-install" id="btn-install">Install App</button>
-      <button class="btn-dismiss" id="btn-dismiss">✕</button>
-    </div>
-  </div>
-</div>
-
-<script>
-let deferredPrompt = null;
-
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js').catch(() => {});
-}
-
-window.addEventListener('beforeinstallprompt', (e) => {
-  e.preventDefault();
-  deferredPrompt = e;
-  document.getElementById('install-bar').style.display = 'flex';
-});
-
-document.getElementById('btn-install')?.addEventListener('click', async () => {
-  if (!deferredPrompt) return;
-  deferredPrompt.prompt();
-  const { outcome } = await deferredPrompt.userChoice;
-  if (outcome === 'accepted') document.getElementById('install-bar').style.display = 'none';
-  deferredPrompt = null;
-});
-
-document.getElementById('btn-dismiss')?.addEventListener('click', () => {
-  document.getElementById('install-bar').style.display = 'none';
-});
-
-window.addEventListener('appinstalled', () => {
-  document.getElementById('install-bar').style.display = 'none';
-});
-
-function fmtBytes(b) {
-  if (b >= 1073741824) return (b / 1073741824).toFixed(1) + ' GB';
-  if (b >= 1048576) return (b / 1048576).toFixed(0) + ' MB';
-  return (b / 1024).toFixed(0) + ' KB';
-}
-
-function fmtUptime(s) {
-  const d = Math.floor(s / 86400);
-  const h = Math.floor((s % 86400) / 3600);
-  const m = Math.floor((s % 3600) / 60);
-  const sec = s % 60;
-  if (d > 0) return `${d}d ${h}h ${m}m`;
-  if (h > 0) return `${h}h ${m}m ${sec}s`;
-  if (m > 0) return `${m}m ${sec}s`;
-  return `${sec}s`;
-}
-
-let serverStartTime = null;
-
-async function fetchSystem() {
-  try {
-    const r = await fetch('/api/system');
-    const d = await r.json();
-    const ramPct = d.ram.total ? Math.round(d.ram.used / d.ram.total * 100) : 0;
-    document.getElementById('ram-text').textContent = `${fmtBytes(d.ram.used)} / ${fmtBytes(d.ram.total)} (${ramPct}%)`;
-    document.getElementById('ram-bar').style.width = ramPct + '%';
-    document.getElementById('ram-bar').style.background = ramPct > 85 ? '#e05c5c' : ramPct > 65 ? '#e0a84a' : '#d4a574';
-    const diskPct = d.disk.total ? Math.round(d.disk.used / d.disk.total * 100) : 0;
-    document.getElementById('disk-text').textContent = `${fmtBytes(d.disk.used)} / ${fmtBytes(d.disk.total)} (${diskPct}%)`;
-    document.getElementById('disk-bar').style.width = diskPct + '%';
-    document.getElementById('uptime-val').textContent = fmtUptime(d.uptime.server);
-    document.getElementById('os-uptime-val').textContent = fmtUptime(d.uptime.os);
-    if (!serverStartTime) serverStartTime = Date.now() - d.uptime.server * 1000;
-  } catch(e) {}
-}
-
-async function fetchStatus() {
-  try {
-    const r = await fetch('/api/dashboard/status');
-    const d = await r.json();
-    const set = (id, online) => {
-      const el = document.getElementById('badge-' + id);
-      if (!el) return;
-      el.textContent = online ? 'ONLINE' : 'OFFLINE';
-      el.className = 'sc-badge ' + (online ? 'online' : 'offline');
-    };
-    set('amagi', d.amagi);
-    set('rem', d.rem);
-    set('shary', d.shary);
-    if (serverStartTime) {
-      const up = Math.floor((Date.now() - serverStartTime) / 1000);
-      const fmt = fmtUptime(up);
-      if (d.amagi) document.getElementById('up-amagi').textContent = 'Runtime: ' + fmt;
-      if (d.rem) document.getElementById('up-rem').textContent = 'Runtime: ' + fmt;
-      if (d.shary) document.getElementById('up-shary').textContent = 'Runtime: ' + fmt;
-    }
-  } catch(e) {}
-}
-
-fetchSystem();
-fetchStatus();
-setInterval(fetchSystem, 10000);
-setInterval(fetchStatus, 8000);
-</script>
+  <script>
+    fetch("/api/dashboard/status").then(r => r.json()).then(data => {
+      for (const [k, v] of Object.entries(data)) {
+        const pill = document.querySelector(`[data-key="${k}"]`);
+        if (!pill) continue;
+        pill.textContent = v.ok ? "online" : "offline";
+        pill.classList.add(v.ok ? "ok" : "off");
+      }
+    }).catch(() => {
+      document.querySelectorAll(".status-pill").forEach(p => {
+        p.textContent = "unknown";
+        p.classList.add("off");
+      });
+    });
+  </script>
 </body>
 </html>

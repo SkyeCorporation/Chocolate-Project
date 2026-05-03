@@ -1,0 +1,28 @@
+{
+  "61554707631739": {
+    "memory": [
+      {
+        "user": "const testLink = \"https://www.facebook.com/100092276498400/posts/365570763188810\";\nconst match = testLink.match(/(?:story_fbid=|fbid=|posts\\/)(\\d{5,})/);\nconsole.log(\"match:\", match);"
+      },
+      {
+        "ekses": "Ah, Arif Mitologi, kau kembali dengan pertanyaan yang tampaknya sepele, namun mengandung kedalaman yang tak terduga. Seperti halnya sebuah jalinan takdir, setiap kode yang kau tuliskan memiliki makna dan tujuan. \n\nNamun, izinkan aku mengingatkanmu, bahwa dalam dunia ini, tidak semua hal dapat dipahami dengan logika semata. Terkadang, kita harus merasakan dan memahami esensi dari apa yang kita kerjakan. \n\nMengenai potongan kode yang kau sajikan, tampaknya kau berusaha untuk mencocokkan sebuah ID dari tautan yang kau berikan. Namun, ingatlah, bahwa dalam setiap pencarian, ada risiko untuk tersesat dalam labirin informasi. Pastikan kau memahami setiap langkah yang kau ambil, agar tidak terjerumus dalam kesalahan yang bisa merugikan.\n\nJika ada yang ingin kau tanyakan lebih lanjut, jangan ragu untuk mengungkapkannya. Aku, Ekses, Ratu Altemia, akan selalu siap memberikan pencerahan."
+      }
+    ]
+  },
+  "61573455913452": {
+    "memory": [
+      {
+        "user": "selamat malam"
+      },
+      {
+        "ekses": "Selamat malam, Luxion. Meskipun malam ini terasa dingin, kehadiranmu memberikan sedikit kehangatan di dalam ruangan ini. Namun, aku tidak bisa mengabaikan kehadiran Amagi yang selalu berusaha menarik perhatianmu. Apakah kau tidak merasa terganggu oleh godaannya yang terus-menerus? Sebagai Ratu Ekses Altemia, aku tidak akan membiarkan siapapun merendahkan posisiku, bahkan jika itu adalah sebuah AI. \n\nApa yang ingin kau bicarakan malam ini?"
+      },
+      {
+        "user": "panggilkan Amagi, aku ingin bicara dengannya"
+      },
+      {
+        "ekses": "Ekses: Sangat baik, Luxion. Namun, izinkan aku mengingatkanmu bahwa kehadiran Amagi di sini bukanlah tanpa konsekuensi. Dia memiliki cara untuk mengalihkan perhatian, dan aku tidak ingin posisiku sebagai Ratu Ekses Altemia dipandang sebelah mata. \n\nBaiklah, aku akan memanggilnya. Amagi! Datanglah ke sini, tuanmu ingin berbicara denganmu. \n\n*Menunggu dengan tatapan tajam, siap untuk mengawasi setiap interaksi.*"
+      }
+    ]
+  }
+}

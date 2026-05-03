@@ -1,7 +1,7 @@
 const axios = require("axios");
 const fs = require("fs-extra");
 const path = require("path");
-const qs = require("qs");
+const cheerio = require("cheerio");
 const https = require("https");
 const agent = new https.Agent({
 	rejectUnauthorized: false
@@ -9,34 +9,12 @@ const agent = new https.Agent({
 const moment = require("moment-timezone");
 const mimeDB = require("mime-db");
 const _ = require("lodash");
-const { google } = require("googleapis");
 const ora = require("ora");
 const log = require("./logger/log.js");
-const { isHexColor, colors } = require("./func/colors.js");
-const Prism = require("./func/prism.js");
-
+const { isHexColor, colors } = require("./fb-chat-api/func/colors.js");
+const Prism = require("./fb-chat-api/func/prism.js");
 const { config } = global.GoatBot;
-const { gmailAccount } = config.credentials;
-const { clientId, clientSecret, refreshToken, apiKey: googleApiKey } = gmailAccount;
-if (!clientId) {
-	log.err("CREDENTIALS", `Please provide a valid clientId in file ${path.normalize(global.client.dirConfig)}`);
-	process.exit();
-}
-if (!clientSecret) {
-	log.err("CREDENTIALS", `Please provide a valid clientSecret in file ${path.normalize(global.client.dirConfig)}`);
-	process.exit();
-}
-if (!refreshToken) {
-	log.err("CREDENTIALS", `Please provide a valid refreshToken in file ${path.normalize(global.client.dirConfig)}`);
-	process.exit();
-}
 
-const oauth2ClientForGGDrive = new google.auth.OAuth2(clientId, clientSecret, "https://developers.google.com/oauthplayground");
-oauth2ClientForGGDrive.setCredentials({ refresh_token: refreshToken });
-const driveApi = google.drive({
-	version: 'v3',
-	auth: oauth2ClientForGGDrive
-});
 const word = [
 	'A', 'Á', 'À', 'Ả', 'Ã', 'Ạ', 'a', 'á', 'à', 'ả', 'ã', 'ạ',
 	'Ă', 'Ắ', 'Ằ', 'Ẳ', 'Ẵ', 'Ặ', 'ă', 'ắ', 'ằ', 'ẳ', 'ẵ', 'ặ',
@@ -180,35 +158,44 @@ function createOraDots(text) {
 	return spin;
 }
 
-function createQueue(callback) {
-	const queue = [];
-	const queueObj = {
-		push: function (task) {
-			queue.push(task);
-			if (queue.length == 1)
-				queueObj.next();
-		},
-		running: null,
-		length: function () {
-			return queue.length;
-		},
-		next: function () {
-			if (queue.length > 0) {
-				const task = queue[0];
-				queueObj.running = task;
-				callback(task, async function (err, result) {
-					queueObj.running = null;
-					queue.shift();
-					queueObj.next();
-				});
-			}
+class TaskQueue {
+	constructor(callback) {
+		this.queue = [];
+		this.running = null;
+		this.callback = callback;
+	}
+	push(task) {
+		this.queue.push(task);
+		if (this.queue.length == 1)
+			this.next();
+	}
+	next() {
+		if (this.queue.length > 0) {
+			const task = this.queue[0];
+			this.running = task;
+			this.callback(task, async (err, result) => {
+				this.running = null;
+				this.queue.shift();
+				this.next();
+			});
 		}
-	};
-	return queueObj;
+	}
+	length() {
+		return this.queue.length;
+	}
 }
 
 function enableStderrClearLine(isEnable = true) {
 	process.stderr.clearLine = isEnable ? defaultStderrClearLine : () => { };
+}
+
+function formatNumber(number) {
+	const regionCode = global.GoatBot.config.language;
+	if (isNaN(number))
+		throw new Error('The first argument (number) must be a number');
+
+	number = Number(number);
+	return number.toLocaleString(regionCode || "en-US");
 }
 
 function getExtFromAttachmentType(type) {
@@ -256,6 +243,14 @@ function getTime(timestamps, format) {
 		timestamps = undefined;
 	}
 	return moment(timestamps).tz(config.timeZone).format(format);
+}
+
+/**
+ * @param {any} value
+ * @returns {("Null" | "Undefined" | "Boolean" | "Number" | "String" | "Symbol" | "Object" | "Function" | "AsyncFunction" | "Array" | "Date" | "RegExp" | "Error" | "Map" | "Set" | "WeakMap" | "WeakSet" | "Int8Array" | "Uint8Array" | "Uint8ClampedArray" | "Int16Array" | "Uint16Array" | "Int32Array" | "Uint32Array" | "Float32Array" | "Float64Array" | "BigInt" | "BigInt64Array" | "BigUint64Array")}
+ */
+function getType(value) {
+	return Object.prototype.toString.call(value).slice(8, -1);
 }
 
 function isNumber(value) {
@@ -423,16 +418,14 @@ function splitPage(arr, limit) {
 	};
 }
 
-function translateAPI(text, lang) {
-	return new Promise((resolve, reject) => {
-		axios.get(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${lang}&dt=t&q=${encodeURIComponent(text)}`)
-			.then(res => {
-				resolve(res.data[0][0][0]);
-			})
-			.catch(err => {
-				reject(err);
-			});
-	});
+async function translateAPI(text, lang) {
+	try {
+		const res = await axios.get(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${lang}&dt=t&q=${encodeURIComponent(text)}`);
+		return res.data[0][0][0];
+	}
+	catch (err) {
+		throw new CustomError(err.response ? err.response.data : err);
+	}
 }
 
 async function downloadFile(url = "", path = "") {
@@ -440,39 +433,50 @@ async function downloadFile(url = "", path = "") {
 		throw new Error(`The first argument (url) must be a string`);
 	if (!path || typeof path !== "string")
 		throw new Error(`The second argument (path) must be a string`);
-	const getFile = await axios.get(url, {
-		responseType: "arraybuffer"
-	});
+	let getFile;
+	try {
+		getFile = await axios.get(url, {
+			responseType: "arraybuffer"
+		});
+	}
+	catch (err) {
+		throw new CustomError(err.response ? err.response.data : err);
+	}
 	fs.writeFileSync(path, Buffer.from(getFile.data));
 	return path;
 }
 
 async function findUid(link) {
-	const response = await axios.post("https://id.traodoisub.com/api.php", qs.stringify({ link }));
-	const uid = response.data.id;
-	if (!uid) {
-		const err = new Error(response.data.error);
-		for (const key in response.data)
-			err[key] = response.data[key];
-		if (err.error == "Vui lòng thao tác chậm lại") {
-			err.name = "SlowDown";
-			err.error = "Please wait a few seconds";
+	try {
+		const response = await axios.post(
+			'https://seomagnifier.com/fbid',
+			new URLSearchParams({
+				'facebook': '1',
+				'sitelink': link
+			}),
+			{
+				headers: {
+					'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+					'Cookie': 'PHPSESSID=0d8feddd151431cf35ccb0522b056dc6'
+				}
+			}
+		);
+		const id = response.data;
+		// try another method if this one fails
+		if (isNaN(id)) {
+			const html = await axios.get(link);
+			const $ = cheerio.load(html.data);
+			const el = $('meta[property="al:android:url"]').attr('content');
+			if (!el) {
+				throw new Error('UID not found');
+			}
+			const number = el.split('/').pop();
+			return number;
 		}
-		else if (err.error == "Vui lòng nhập đúng link facebook") {
-			err.name = "InvalidLink";
-			err.error = "Please enter the correct facebook link";
-		}
-		else if (err.error == "Không thể lấy được dữ liệu vui lòng báo admin!!!") {
-			err.name = "CannotGetData";
-			err.error = "Unable to get data, please report to admin!!!";
-		}
-		else if (err.error == "Link không tồn tại hoặc chưa để chế độ công khai!") {
-			err.name = "LinkNotExist";
-			err.error = "Link does not exist or is not set to public!";
-		}
-		throw err;
+		return id;
+	} catch (error) {
+		throw new Error('An unexpected error occurred. Please try again.');
 	}
-	return uid;
 }
 
 async function getStreamsFromAttachment(attachments) {
@@ -764,258 +768,23 @@ async function uploadZippyshare(stream) {
 	return res.data;
 }
 
-const drive = {
-	default: driveApi,
-	parentID: "",
-	async uploadFile(fileName, mimeType, file) {
-		if (!file && typeof fileName === "string") {
-			file = mimeType;
-			mimeType = undefined;
-		}
-		let response;
-		try {
-			response = (await driveApi.files.create({
-				resource: {
-					name: fileName,
-					parents: [this.parentID]
-				},
-				media: {
-					mimeType,
-					body: file
-				},
-				fields: "*"
-			})).data;
-		}
-		catch (err) {
-			throw new Error(err.errors.map(e => e.message).join("\n"));
-		}
-		await utils.drive.makePublic(response.id);
-		return response;
-	},
-
-	async deleteFile(id) {
-		if (!id || typeof id !== "string")
-			throw new Error('The first argument (id) must be a string');
-		try {
-			await driveApi.files.delete({
-				fileId: id
-			});
-			return true;
-		}
-		catch (err) {
-			throw new Error(err.errors.map(e => e.message).join("\n"));
-		}
-	},
-
-	getUrlDownload(id = "") {
-		if (!id || typeof id !== "string")
-			throw new Error('The first argument (id) must be a string');
-		return `https://docs.google.com/uc?id=${id}&export=download&confirm=t${googleApiKey ? `&key=${googleApiKey}` : ''}`;
-	},
-
-	async getFile(id, responseType) {
-		if (!id || typeof id !== "string")
-			throw new Error('The first argument (id) must be a string');
-		if (!responseType)
-			responseType = "arraybuffer";
-		if (typeof responseType !== "string")
-			throw new Error('The second argument (responseType) must be a string');
-
-		const response = await driveApi.files.get({
-			fileId: id,
-			alt: 'media'
-		}, {
-			responseType
-		});
-		const headersResponse = response.headers;
-		const fileName = headersResponse["content-disposition"]?.split('filename="')[1]?.split('"')[0] || `${utils.randomString(10)}.${utils.getExtFromMimeType(headersResponse["content-type"])}`;
-
-		if (responseType == "arraybuffer")
-			return Buffer.from(response.data);
-		else if (responseType == "stream")
-			response.data.path = fileName;
-
-		const file = response.data;
-
-		return file;
-	},
-
-	async getFileName(id) {
-		if (!id || typeof id !== "string")
-			throw new Error('The first argument (id) must be a string');
-		const { fileNames: tempFileNames } = global.temp.filesOfGoogleDrive;
-		if (tempFileNames[id])
-			return tempFileNames[id];
-		try {
-			const { data: response } = await driveApi.files.get({
-				fileId: id,
-				fields: "name"
-			});
-			tempFileNames[id] = response.name;
-			return response.name;
-		}
-		catch (err) {
-			throw new Error(err.errors.map(e => e.message).join("\n"));
-		}
-	},
-
-	async makePublic(id) {
-		if (!id || typeof id !== "string")
-			throw new Error('The first argument (id) must be a string');
-		try {
-			await driveApi.permissions.create({
-				fileId: id,
-				requestBody: {
-					role: 'reader',
-					type: 'anyone'
-				}
-			});
-			return id;
-		}
-		catch (err) {
-			const error = new Error(err.errors.map(e => e.message).join("\n"));
-			error.name = 'CAN\'T_MAKE_PUBLIC';
-			throw new Error(err.errors.map(e => e.message).join("\n"));
-		}
-	},
-
-	async checkAndCreateParentFolder(folderName) {
-		if (!folderName || typeof folderName !== "string")
-			throw new Error('The first argument (folderName) must be a string');
-		let parentID;
-		const { data: findParentFolder } = await driveApi.files.list({
-			q: `name="${folderName}" and mimeType="application/vnd.google-apps.folder" and trashed=false`,
-			fields: '*'
-		});
-		const parentFolder = findParentFolder.files.find(i => i.ownedByMe);
-		if (!parentFolder) {
-			const { data } = await driveApi.files.create({
-				requestBody: {
-					name: folderName,
-					mimeType: 'application/vnd.google-apps.folder'
-				}
-			});
-			await driveApi.permissions.create({
-				fileId: data.id,
-				requestBody: {
-					role: 'reader',
-					type: 'anyone'
-				}
-			});
-			parentID = data.id;
-		}
-		else if (!parentFolder.shared) {
-			await driveApi.permissions.create({
-				fileId: parentFolder.id,
-				requestBody: {
-					role: 'reader',
-					type: 'anyone'
-				}
-			});
-			parentID = parentFolder.data.id;
-		}
-		else
-			parentID = parentFolder.id;
-		return parentID;
-	}
-};
-
-class GoatBotApis {
-	constructor(apiKey) {
-		this.apiKey = apiKey;
-		const url = `https://goatbot.tk/api`;
-		this.api = axios.create({
-			baseURL: url,
-			headers: {
-				"x-api-key": apiKey
-			}
-		});
-
-		// modify axios response
-		this.api.interceptors.response.use((response) => {
-			return {
-				status: response.status,
-				statusText: response.statusText,
-				responseHeaders: {
-					'x-remaining-requests': parseInt(response.headers['x-remaining-requests']),
-					'x-free-remaining-requests': parseInt(response.headers['x-free-remaining-requests']),
-					'x-used-requests': parseInt(response.headers['x-used-requests'])
-				},
-				data: response.data
-			};
-		});
-
-		// modify axios response error
-		this.api.interceptors.response.use(undefined, async (error) => {
-			let responseDataError;
-			const promise = () => new Promise((resolveFunc) => {
-				// decode all response data to utf8 (string) if responseType is 
-				if (error.response.config.responseType === "arraybuffer") {
-					responseDataError = Buffer.from(error.response.data, "binary").toString("utf8");
-					resolveFunc();
-				}
-				else if (error.response.config.responseType === "stream") {
-					let data = "";
-					error.response.data.on("data", (chunk) => {
-						data += chunk;
-					});
-					error.response.data.on("end", () => {
-						responseDataError = data;
-						resolveFunc();
-					});
-				}
-				else {
-					responseDataError = error.response.data;
-					resolveFunc();
-				}
-			});
-
-			await promise();
-			try {
-				responseDataError = JSON.parse(responseDataError);
-			}
-			catch (err) { }
-			return Promise.reject({
-				status: error.response.status,
-				statusText: error.response.statusText,
-				responseHeaders: {
-					'x-remaining-requests': parseInt(error.response.headers['x-remaining-requests']),
-					'x-free-remaining-requests': parseInt(error.response.headers['x-free-remaining-requests']),
-					'x-used-requests': parseInt(error.response.headers['x-used-requests'])
-				},
-				data: responseDataError
-			});
-		});
-	}
-
-	isSetApiKey() {
-		return this.apiKey && typeof this.apiKey === "string";
-	}
-
-	getApiKey() {
-		return this.apiKey;
-	}
-
-	async getAccountInfo() {
-		const { data } = await this.api.get("/info");
-		return data;
-	}
-}
-
 const utils = {
 	CustomError,
+	TaskQueue,
 
 	colors,
 	convertTime,
 	createOraDots,
-	createQueue,
 	defaultStderrClearLine,
 	enableStderrClearLine,
+	formatNumber,
 	getExtFromAttachmentType,
 	getExtFromMimeType,
 	getExtFromUrl,
 	getPrefix,
+	getText: require("./languages/makeFuncGetLangs.js"),
 	getTime,
+	getType,
 	isHexColor,
 	isNumber,
 	jsonStringifyColor,
@@ -1028,7 +797,6 @@ const utils = {
 	removeHomeDir,
 	splitPage,
 	translateAPI,
-
 	// async functions
 	downloadFile,
 	findUid,
@@ -1039,10 +807,7 @@ const utils = {
 	translate,
 	shortenURL,
 	uploadZippyshare,
-	uploadImgbb,
-	drive,
-
-	GoatBotApis
+	uploadImgbb
 };
 
 module.exports = utils;

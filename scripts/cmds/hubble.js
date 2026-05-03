@@ -1,30 +1,22 @@
 const axios = require('axios');
 const fs = require('fs-extra');
-
 const { getStreamFromURL } = global.utils;
-
 const pathData = __dirname + '/assets/hubble/nasa.json';
 if (!fs.existsSync(__dirname + '/assets/hubble'))
 	fs.mkdirSync(__dirname + '/assets/hubble');
-
 let hubbleData;
-
 module.exports = {
 	config: {
 		name: "hubble",
-		version: "1.2",
+		version: "1.3",
 		author: "NTKhang",
 		countDown: 5,
 		role: 0,
-		shortDescription: {
+		description: {
 			vi: "Xem ảnh từ Hubble",
 			en: "View Hubble images"
 		},
-		longDescription: {
-			vi: "Xem ảnh từ Hubble",
-			en: "View Hubble images"
-		},
-		category: "owner",
+		category: "helper",
 		guide: {
 			en: "{pn} <date (mm-dd)>"
 		}
@@ -66,7 +58,6 @@ module.exports = {
 		});
 	}
 };
-
 const monthText = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 function checkValidDate(date) {
 	const dateArr = date.split(/[-/]/);

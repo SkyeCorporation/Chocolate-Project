@@ -1,80 +1,205 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Service Agent — Chocolate</title>
-<style>
-:root{--bg:#1a0e08;--surf:#251508;--surf2:#2e1a0a;--bord:#3d2510;--acc:#d4a574;--acc2:#b8875a;--text:#e8d5c0;--muted:#7a5c42;--r:10px}
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
-.header{display:flex;align-items:center;justify-content:space-between;padding:14px 28px;border-bottom:1px solid var(--bord);background:var(--surf);position:sticky;top:0;z-index:10}
-.hlt{display:flex;align-items:center;gap:10px}
-.hlt a{color:var(--acc);font-size:0.82rem;display:flex;align-items:center;gap:5px;text-decoration:none;opacity:.8}
-.hlt a:hover{opacity:1}
-.htitle{font-weight:700;font-size:0.95rem;color:var(--acc)}
-.tabs{display:flex;gap:6px;padding:20px 28px 0}
-.tab{padding:8px 18px;border-radius:var(--r) var(--r) 0 0;font-size:0.83rem;font-weight:600;cursor:pointer;border:1px solid var(--bord);border-bottom:none;background:var(--surf);color:var(--muted);transition:.2s}
-.tab.active{background:var(--surf2);color:var(--acc);border-color:var(--acc)}
-.content{padding:0 28px 28px}
-.tab-panel{display:none;background:var(--surf2);border:1px solid var(--bord);border-radius:0 var(--r) var(--r) var(--r);padding:20px;min-height:200px}
-.tab-panel.active{display:block}
-.file-list{display:flex;flex-direction:column;gap:8px}
-.file-item{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--surf);border:1px solid var(--bord);border-radius:var(--r);cursor:pointer;transition:.2s;text-decoration:none;color:var(--text)}
-.file-item:hover{border-color:var(--acc);background:var(--surf2)}
-.file-item svg{color:var(--acc);flex-shrink:0}
-.file-name{font-size:0.85rem;font-weight:500;flex:1}
-.file-open{font-size:0.72rem;color:var(--acc);opacity:.7}
-.empty{color:var(--muted);font-size:0.85rem;text-align:center;padding:30px 0}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Service Agent · Chocolate Project V8.1</title>
+  <link rel="stylesheet" href="dashboard.css">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 </head>
 <body>
-<div class="header">
-  <div class="hlt">
-    <a href="/"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Dashboard</a>
-    <span style="color:var(--bord)">|</span>
-    <span class="htitle">Service Agent</span>
-  </div>
-</div>
-<div class="tabs">
-  <div class="tab active" onclick="switchTab('amagi',this)">AmagiService</div>
-  <div class="tab" onclick="switchTab('rem',this)">RemService</div>
-  <div class="tab" onclick="switchTab('shary',this)">SharyService</div>
-</div>
-<div class="content">
-  <div class="tab-panel active" id="panel-amagi"></div>
-  <div class="tab-panel" id="panel-rem"></div>
-  <div class="tab-panel" id="panel-shary"></div>
-</div>
-<script>
-async function loadFiles(key) {
-  const panel = document.getElementById('panel-' + key);
-  if (panel.dataset.loaded) return;
-  panel.dataset.loaded = '1';
-  try {
-    const r = await fetch('/api/services/' + key);
-    const d = await r.json();
-    if (!d.files || d.files.length === 0) {
-      panel.innerHTML = '<div class="empty">Belum ada file .html di folder ini.</div>';
-      return;
+  <div class="bg-grain"></div>
+
+  <header class="top-bar">
+    <div class="brand">
+      <div class="brand-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <span class="brand-name">Service Agent</span>
+        <span class="brand-version">Chocolate V8.1</span>
+      </div>
+    </div>
+    <div class="top-meta">
+      <span class="dot pulse"></span>
+      <span id="ctx-label">all services</span>
+    </div>
+  </header>
+
+  <main class="main">
+    <a href="/" class="page-back" id="back-link">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="19" y1="12" x2="5" y2="12"/>
+        <polyline points="12 19 5 12 12 5"/>
+      </svg>
+      <span id="back-label">Kembali ke Dashboard</span>
+    </a>
+
+    <section id="view-services" class="svc-section active">
+      <div class="hero">
+        <h1>Service Agent</h1>
+        <p>Pilih service untuk melihat semua HTML / Web yang dibuat oleh agent terkait. Klik file untuk membukanya langsung.</p>
+      </div>
+      <div class="svc-grid" id="services-grid">
+        <div class="empty-state">Memuat service…</div>
+      </div>
+    </section>
+
+    <section id="view-files" class="svc-section">
+      <div class="hero">
+        <h1 id="files-title">Files</h1>
+        <p id="files-desc">Daftar file HTML pada service yang dipilih.</p>
+      </div>
+      <div class="file-list" id="files-list">
+        <div class="empty-state">Memuat files…</div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="bottom-bar">
+    <span>Chocolate Project V8.1 · Service Agent Module</span>
+    <span class="muted">© Lyethilf 2026</span>
+  </footer>
+
+  <script>
+    const $ = (s) => document.querySelector(s);
+    const $$ = (s) => document.querySelectorAll(s);
+
+    const SERVICE_META = {
+      amagi: {
+        name: "AmagiService",
+        label: "Amagi · Gemini",
+        desc: "Web/HTML yang di-generate oleh Amagi (Gemini) di folder ./AmagiService/",
+      },
+      rem: {
+        name: "RemService",
+        label: "Rem · OpenAI",
+        desc: "Web/HTML yang di-generate oleh Rem (OpenAI) di folder ./RemService/",
+      },
+      shary: {
+        name: "SharyService",
+        label: "Shary · Hacker",
+        desc: "Web/HTML yang di-generate oleh Shary (Gemini) di folder ./SharyService/",
+      },
+    };
+
+    function showView(view) {
+      $$(".svc-section").forEach((s) => s.classList.remove("active"));
+      $("#view-" + view).classList.add("active");
     }
-    panel.innerHTML = '<div class="file-list">' + d.files.map(f =>
-      `<a class="file-item" href="/service-files/${key}/${f}" target="_blank">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-        <span class="file-name">${f}</span>
-        <span class="file-open">Buka ↗</span>
-      </a>`
-    ).join('') + '</div>';
-  } catch { panel.innerHTML = '<div class="empty">Gagal memuat file.</div>'; }
-}
-function switchTab(key, el) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-  el.classList.add('active');
-  document.getElementById('panel-' + key).classList.add('active');
-  loadFiles(key);
-}
-loadFiles('amagi');
-</script>
+
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, (c) => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;"
+      }[c]));
+    }
+
+    async function loadServices() {
+      const grid = $("#services-grid");
+      try {
+        const res = await fetch("/api/services");
+        const data = await res.json();
+        if (!data.services || !data.services.length) {
+          grid.innerHTML = `<div class="empty-state">Tidak ada service yang terdaftar.</div>`;
+          return;
+        }
+        grid.innerHTML = data.services.map((s) => {
+          const meta = SERVICE_META[s.key] || { label: s.name, desc: "" };
+          return `
+            <div class="svc-card" data-key="${escapeHtml(s.key)}">
+              <div class="svc-head">
+                <div class="svc-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+                  </svg>
+                </div>
+                <div class="svc-name">${escapeHtml(meta.label)}</div>
+                <span class="svc-count">${s.count} file</span>
+              </div>
+              <div class="svc-desc">${escapeHtml(meta.desc)}</div>
+            </div>
+          `;
+        }).join("");
+
+        $$(".svc-card").forEach((card) => {
+          card.addEventListener("click", () => {
+            const key = card.dataset.key;
+            location.hash = "#" + key;
+          });
+        });
+      } catch (err) {
+        grid.innerHTML = `<div class="empty-state">Gagal memuat: ${escapeHtml(err.message)}</div>`;
+      }
+    }
+
+    async function loadFiles(key) {
+      const list = $("#files-list");
+      const meta = SERVICE_META[key] || { label: key, desc: "" };
+      $("#files-title").textContent = meta.label;
+      $("#files-desc").textContent = meta.desc;
+      $("#ctx-label").textContent = key;
+      $("#back-label").textContent = "Kembali ke daftar service";
+      list.innerHTML = `<div class="empty-state">Memuat files…</div>`;
+      try {
+        const res = await fetch(`/api/services/${encodeURIComponent(key)}`);
+        if (!res.ok) throw new Error("Service tidak ditemukan");
+        const data = await res.json();
+        if (!data.files || !data.files.length) {
+          list.innerHTML = `
+            <div class="empty-state">
+              Belum ada file HTML.<br>
+              Tambahkan file ke <code>./${escapeHtml(meta.name)}/</code> dan akan muncul di sini.
+            </div>
+          `;
+          return;
+        }
+        list.innerHTML = data.files.map((f) => `
+          <a class="file-row" href="/service-files/${encodeURIComponent(key)}/${encodeURIComponent(f.path)}" target="_blank" rel="noopener">
+            <div>
+              <div class="file-name">${escapeHtml(f.name)}</div>
+              <div class="file-path">${escapeHtml(f.path)} · ${(f.size/1024).toFixed(1)} KB</div>
+            </div>
+            <div class="file-open">
+              Buka
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                <polyline points="15 3 21 3 21 9"/>
+                <line x1="10" y1="14" x2="21" y2="3"/>
+              </svg>
+            </div>
+          </a>
+        `).join("");
+      } catch (err) {
+        list.innerHTML = `<div class="empty-state">Gagal memuat: ${escapeHtml(err.message)}</div>`;
+      }
+    }
+
+    function route() {
+      const key = location.hash.replace("#", "").trim();
+      if (key && SERVICE_META[key]) {
+        showView("files");
+        loadFiles(key);
+      } else {
+        showView("services");
+        $("#ctx-label").textContent = "all services";
+        $("#back-label").textContent = "Kembali ke Dashboard";
+        loadServices();
+      }
+    }
+
+    $("#back-link").addEventListener("click", (e) => {
+      if (location.hash) {
+        e.preventDefault();
+        location.hash = "";
+      }
+    });
+
+    window.addEventListener("hashchange", route);
+    route();
+  </script>
 </body>
 </html>

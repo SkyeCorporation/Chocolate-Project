@@ -1,99 +1,216 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Rem AI Agent — Chocolate</title>
-<style>
-:root{--bg:#080e1a;--surf:#08111f;--surf2:#0c1828;--bord:#102035;--acc:#74a8d4;--text:#c0d5e8;--muted:#425c7a;--r:10px}
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);height:100vh;display:flex;flex-direction:column}
-.header{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid var(--bord);background:var(--surf);flex-shrink:0}
-.header-left{display:flex;align-items:center;gap:10px}
-.header-left a{color:var(--acc);font-size:0.8rem;text-decoration:none;display:flex;align-items:center;gap:4px;opacity:.8}
-.header-left a:hover{opacity:1}
-.htitle{font-weight:700;font-size:0.9rem;color:var(--acc)}
-.header-right{display:flex;gap:8px}
-.hbtn{padding:6px 14px;border-radius:7px;border:1px solid var(--bord);background:var(--surf2);color:var(--text);font-size:0.78rem;cursor:pointer;text-decoration:none;transition:.2s}
-.hbtn:hover{border-color:var(--acc);color:var(--acc)}
-.chat{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:14px}
-.msg{max-width:75%;padding:11px 15px;border-radius:var(--r);font-size:0.88rem;line-height:1.6;white-space:pre-wrap}
-.msg.user{background:var(--acc);color:var(--bg);align-self:flex-end;font-weight:500}
-.msg.ai{background:var(--surf2);color:var(--text);align-self:flex-start;border:1px solid var(--bord)}
-.msg.ai.loading{color:var(--muted);font-style:italic}
-.input-area{padding:14px 20px;border-top:1px solid var(--bord);background:var(--surf);display:flex;gap:10px;flex-shrink:0}
-.input-box{flex:1;background:var(--surf2);border:1px solid var(--bord);color:var(--text);border-radius:var(--r);padding:10px 14px;font-size:0.88rem;outline:none;resize:none;font-family:inherit;min-height:42px;max-height:120px}
-.input-box:focus{border-color:var(--acc)}
-.send-btn{background:var(--acc);color:var(--bg);border:none;border-radius:var(--r);padding:0 18px;font-weight:700;font-size:0.85rem;cursor:pointer;flex-shrink:0;transition:.2s}
-.send-btn:hover{opacity:.85}
-.send-btn:disabled{opacity:.5;cursor:not-allowed}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Rem AI Agent</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
-<div class="header">
-  <div class="header-left">
-    <a href="http://localhost:5000"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Dashboard</a>
-    <span style="color:var(--bord)">|</span>
-    <span class="htitle">Rem · OpenAI</span>
+  <div class="app">
+
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <div class="logo">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8zm0-14a6 6 0 1 0 6 6 6 6 0 0 0-6-6zm0 10a4 4 0 1 1 4-4 4 4 0 0 1-4 4z"/></svg>
+          <span>Rem AI Agent</span>
+        </div>
+        <span class="model-badge">gpt-5.4</span>
+        <a href="#" class="switch-link" id="switch-amagi" title="Switch to Amagi Agent">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          Amagi
+        </a>
+        <a href="#" class="switch-link" id="switch-shary" title="Switch to Shary Agent" style="color:#ff4d4d">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+          Shary
+        </a>
+      </div>
+      <div class="header-right">
+        <div id="agent-status" class="status-indicator idle">
+          <span class="dot"></span>
+          <span class="status-text">Ready</span>
+        </div>
+        <button id="btn-clear-history" class="btn-icon" title="Clear conversation">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.79"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Desktop: 3-panel layout / Mobile: single active panel -->
+    <div class="main-layout">
+
+      <!-- Panel: Files + Checkpoints -->
+      <aside class="panel panel-files" id="panel-files">
+        <div class="panel-tabs">
+          <button class="tab-btn active" data-tab="files">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+            Files
+          </button>
+          <button class="tab-btn" data-tab="checkpoints">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            History
+          </button>
+        </div>
+
+        <div id="tab-files" class="tab-content active">
+          <div class="panel-toolbar">
+            <span class="panel-title">Explorer</span>
+            <div class="toolbar-actions">
+              <button id="btn-new-file" class="tool-btn" title="New File">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+              </button>
+              <button id="btn-refresh-files" class="tool-btn" title="Refresh">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+              </button>
+            </div>
+          </div>
+          <div id="file-tree" class="file-tree">
+            <div class="empty-state">Belum ada file.<br>Minta agent untuk membuat!</div>
+          </div>
+        </div>
+
+        <div id="tab-checkpoints" class="tab-content">
+          <div class="panel-toolbar">
+            <span class="panel-title">Checkpoints</span>
+            <button id="btn-refresh-checkpoints" class="tool-btn" title="Refresh">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+            </button>
+          </div>
+          <div id="checkpoints-list" class="checkpoints-list">
+            <div class="empty-state">Belum ada checkpoint.</div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Panel: Editor -->
+      <div class="panel panel-editor" id="panel-editor">
+        <div class="editor-header">
+          <div id="editor-tab" class="editor-tab">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <span id="editor-filename">Tidak ada file</span>
+          </div>
+          <div class="editor-actions">
+            <button id="btn-save-file" class="btn-sm" style="display:none">Simpan</button>
+          </div>
+        </div>
+        <div class="editor-wrapper">
+          <div id="editor-placeholder" class="editor-placeholder">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <p>Pilih file dari explorer<br>atau minta agent membuat file</p>
+          </div>
+          <textarea id="code-editor" class="code-editor" spellcheck="false" style="display:none"></textarea>
+        </div>
+        <div class="logs-panel">
+          <div class="logs-header">
+            <span>Agent Logs</span>
+            <button id="btn-clear-logs" class="tool-btn">Hapus</button>
+          </div>
+          <div id="logs-content" class="logs-content"></div>
+        </div>
+      </div>
+
+      <!-- Panel: Chat -->
+      <div class="panel panel-chat active-mobile" id="panel-chat">
+        <div class="chat-header">
+          <div class="chat-header-left">
+            <div class="agent-dot"></div>
+            <span>Rem AI Agent</span>
+          </div>
+          <span class="chat-header-sub">Powered by GPT-5.4</span>
+        </div>
+        <div id="chat-messages" class="chat-messages">
+          <div class="welcome-message">
+            <div class="welcome-icon">
+              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8zm0-14a6 6 0 1 0 6 6 6 6 0 0 0-6-6zm0 10a4 4 0 1 1 4-4 4 4 0 0 1-4 4z"/></svg>
+            </div>
+            <h3>Halo! Saya Rem AI Agent</h3>
+            <p>Saya bisa ngobrol, menjawab pertanyaan, membuat & mengedit file, menjalankan perintah, generate gambar, dan banyak lagi. Ada yang bisa saya bantu?</p>
+            <div class="suggestions">
+              <button class="suggestion-btn" data-msg="Halo! Kamu bisa ngapain aja?">Apa yang bisa kamu lakukan?</button>
+              <button class="suggestion-btn" data-msg="/imagine rem re zero maid blue hair anime beautiful detailed">/imagine gambar AI</button>
+              <button class="suggestion-btn" data-msg="Buatkan app Express.js sederhana dengan route /hello dan /about">Buat Express app</button>
+              <button class="suggestion-btn" data-msg="List semua file di workspace dan jelaskan strukturnya">Explore workspace</button>
+            </div>
+          </div>
+        </div>
+        <div class="chat-input-area">
+          <!-- Image preview strip -->
+          <div id="image-preview-strip" class="image-preview-strip" style="display:none">
+            <div class="preview-inner">
+              <img id="preview-img" src="" alt="preview">
+              <button id="btn-remove-image" class="remove-img-btn" title="Hapus gambar">✕</button>
+            </div>
+            <span id="preview-label" class="preview-label"></span>
+          </div>
+          <div class="input-wrapper">
+            <input type="file" id="file-input-image" accept="image/*" style="display:none">
+            <button id="btn-attach" class="btn-attach" title="Kirim gambar">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            </button>
+            <textarea
+              id="chat-input"
+              class="chat-input"
+              placeholder="Ketik pesan atau kirim gambar..."
+              rows="1"
+            ></textarea>
+            <button id="btn-send" class="btn-send" title="Kirim">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </button>
+          </div>
+          <div class="input-hints">Enter kirim · Shift+Enter baris baru · 📎 kirim gambar · /imagine &lt;prompt&gt; buat gambar AI</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="mobile-nav" id="mobile-nav">
+      <button class="nav-btn" data-panel="panel-files">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+        <span>Files</span>
+      </button>
+      <button class="nav-btn" data-panel="panel-editor">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        <span>Editor</span>
+      </button>
+      <button class="nav-btn active" data-panel="panel-chat">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        <span>Chat</span>
+      </button>
+      <button class="nav-btn" data-panel="panel-files" data-tab-target="checkpoints">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <span>History</span>
+      </button>
+    </nav>
+
   </div>
-  <div class="header-right">
-    <a class="hbtn" href="http://localhost:5000/agent" target="_blank">Amagi</a>
-    <a class="hbtn" href="http://localhost:3003" target="_blank">Shary</a>
+
+  <!-- New File Modal -->
+  <div id="modal-overlay" class="modal-overlay" style="display:none">
+    <div class="modal">
+      <div class="modal-header">
+        <span>File Baru</span>
+        <button id="modal-close" class="tool-btn">✕</button>
+      </div>
+      <input id="modal-filename" type="text" class="modal-input" placeholder="contoh: src/app.js">
+      <div class="modal-actions">
+        <button id="modal-cancel" class="btn-sm">Batal</button>
+        <button id="modal-create" class="btn-sm primary">Buat</button>
+      </div>
+    </div>
   </div>
-</div>
-<div class="chat" id="chat">
-  <div class="msg ai">Selamat datang, Tuan. Saya Rem, siap melayani dengan sepenuh hati.</div>
-</div>
-<div class="input-area">
-  <textarea class="input-box" id="input" placeholder="Ketik pesan..." rows="1"></textarea>
-  <button class="send-btn" id="send">Kirim</button>
-</div>
-<script>
-const chat = document.getElementById('chat');
-const input = document.getElementById('input');
-const send = document.getElementById('send');
-const history = [];
 
-function addMsg(text, role) {
-  const el = document.createElement('div');
-  el.className = 'msg ' + role;
-  el.textContent = text;
-  chat.appendChild(el);
-  chat.scrollTop = chat.scrollHeight;
-  return el;
-}
-
-async function sendMsg() {
-  const msg = input.value.trim();
-  if (!msg) return;
-  input.value = '';
-  send.disabled = true;
-  addMsg(msg, 'user');
-  const msgs = history.map(h => ({ role: h.role, content: h.content }));
-  history.push({ role: 'user', content: msg });
-  const aiEl = addMsg('Sedang mengetik...', 'ai loading');
-  try {
-    const r = await fetch('/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: msg, history: msgs })
-    });
-    const d = await r.json();
-    const reply = d.reply || d.error || 'Terjadi kesalahan.';
-    aiEl.textContent = reply;
-    aiEl.className = 'msg ai';
-    history.push({ role: 'assistant', content: reply });
-  } catch(e) {
-    aiEl.textContent = 'Error: ' + e.message;
-    aiEl.className = 'msg ai';
-  }
-  send.disabled = false;
-  input.focus();
-}
-
-send.addEventListener('click', sendMsg);
-input.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); } });
-input.addEventListener('input', () => { input.style.height = 'auto'; input.style.height = Math.min(input.scrollHeight, 120) + 'px'; });
-</script>
+  <script src="app.js"></script>
+  <script>
+    // Set switch link dynamically
+    document.getElementById("switch-amagi").href = window.location.protocol + "//" + window.location.hostname + (window.location.port === "8977" ? ":8976" : "");
+    const sharyLink = document.getElementById("switch-shary");
+    if (sharyLink) {
+      sharyLink.href = window.location.protocol + "//" + window.location.hostname + ":3003";
+    }
+  </script>
 </body>
 </html>

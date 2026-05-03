@@ -1,11 +1,11 @@
-const { getTime, drive } = global.utils;
+const { getTime } = global.utils;
 if (!global.temp.welcomeEvent)
 	global.temp.welcomeEvent = {};
 
 module.exports = {
 	config: {
 		name: "welcome",
-		version: "1.5",
+		version: "1.7",
 		author: "NTKhang",
 		category: "events"
 	},
@@ -26,10 +26,10 @@ module.exports = {
 			session2: "noon",
 			session3: "afternoon",
 			session4: "evening",
-			welcomeMessage: "Thank you for inviting me to the group!\nBot prefix: %1\nTo view the list of commands, please enter: %1help",
+			welcomeMessage: "Bot telah terkoneksi.\nRem Chan disini!!\n\nOh ya buat kalian yang belum tau saya siapa? saya Rem! Bot AI yang diciptakan oleh tuan Luxion",
 			multiple1: "you",
 			multiple2: "you guys",
-			defaultWelcomeMessage: `Hello {userName}.\nWelcome {multiple} to the chat group: {boxName}\nHave a nice {session} 😊`
+			defaultWelcomeMessage: `Halo {userName}!\nSelamat datang ke {boxName}`
 		}
 	},
 
@@ -44,8 +44,7 @@ module.exports = {
 				// if new member is bot
 				if (dataAddedParticipants.some((item) => item.userFbId == api.getCurrentUserID())) {
 					if (nickNameBot)
-						api.changeNickname(nickNameBot, threadID, api.getCurrentUserID());
-					return message.send(getLang("welcomeMessage", prefix));
+						
 				}
 				// if new member:
 				if (!global.temp.welcomeEvent[threadID])
@@ -54,15 +53,18 @@ module.exports = {
 						dataAddedParticipants: []
 					};
 
+				// push new member to array
 				global.temp.welcomeEvent[threadID].dataAddedParticipants.push(...dataAddedParticipants);
+				// if timeout is set, clear it
 				clearTimeout(global.temp.welcomeEvent[threadID].joinTimeout);
 
+				// set new timeout
 				global.temp.welcomeEvent[threadID].joinTimeout = setTimeout(async function () {
-					const dataAddedParticipants = global.temp.welcomeEvent[threadID].dataAddedParticipants;
 					const threadData = await threadsData.get(threadID);
-					const dataBanned = threadData.data.banned_ban || [];
 					if (threadData.settings.sendWelcomeMessage == false)
 						return;
+					const dataAddedParticipants = global.temp.welcomeEvent[threadID].dataAddedParticipants;
+					const dataBanned = threadData.data.banned_ban || [];
 					const threadName = threadData.threadName;
 					const userName = [],
 						mentions = [];
@@ -111,17 +113,6 @@ module.exports = {
 
 					form.body = welcomeMessage;
 
-					if (threadData.data.welcomeAttachment) {
-						const files = threadData.data.welcomeAttachment;
-						const attachments = files.reduce((acc, file) => {
-							acc.push(drive.getFile(file, "stream"));
-							return acc;
-						}, []);
-						form.attachment = (await Promise.allSettled(attachments))
-							.filter(({ status }) => status == "fulfilled")
-							.map(({ value }) => value);
-					}
-					message.send(form);
 					delete global.temp.welcomeEvent[threadID];
 				}, 1500);
 			};

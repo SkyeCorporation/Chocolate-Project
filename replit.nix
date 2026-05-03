@@ -1,11 +1,13 @@
-{ pkgs }: {
-	deps = [
-		pkgs.nodejs-16_x
-		pkgs.nodePackages.typescript-language-server
-		pkgs.libuuid
-		pkgs.replitPackages.jest
-	];
-	env = {
-		LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath [pkgs.libuuid];
-	};
+{pkgs}: {
+  deps = [
+    pkgs.pkg-config
+    pkgs.pixman
+    pkgs.librsvg
+    pkgs.giflib
+    pkgs.pango
+    pkgs.cairo
+    pkgs.libjpeg
+    pkgs.libpng
+    pkgs.util-linux
+  ];
 }

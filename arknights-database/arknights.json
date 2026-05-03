@@ -1,0 +1,51 @@
+[
+  {
+    "name": "Logos",
+    "rarity": 6,
+    "id": "1",
+    "price": 120.50,
+    "image": "Logos.webp"
+  },
+  {
+    "name": "Pozyomka",
+    "rarity": 6,
+    "id": "2",
+    "price": 120.50,
+    "image": "Pozyomka.webp"
+  },
+  {
+    "name": "Pozyomka",
+    "rarity": 6,
+    "id": "2S0",
+    "price": 120.50,
+    "image": "Pozyomka-S0.webp"
+  },
+  {
+    "name": "Pozyomka",
+    "rarity": 6,
+    "id": "2U",
+    "price": 120.50,
+    "image": "Pozyomka-U.webp"
+  },
+  {
+    "name": "Vigil",
+    "rarity": 6,
+    "id": "3",
+    "price": 120.50,
+    "image": "Vigil.webp"
+  },
+  {
+    "name": "Vigil",
+    "rarity": 6,
+    "id": "3S1",
+    "price": 120.50,
+    "image": "Vigil-S1.webp"
+  },
+  {
+    "name": "Vigil",
+    "rarity": 6,
+    "id": "3U",
+    "price": 120.50,
+    "image": "Vigil-U.webp"
+  }
+]
